@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Website Builder API Documentation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 300px;
+            background: #2c3e50;
+            color: white;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        .main-content {
+            margin-left: 300px;
+            padding: 2rem;
+        }
+        .endpoint {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .method {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.875rem;
+        }
+        .method.get { background: #28a745; color: white; }
+        .method.post { background: #007bff; color: white; }
+        .method.put { background: #ffc107; color: black; }
+        .method.delete { background: #dc3545; color: white; }
+        .url {
+            font-family: 'Courier New', monospace;
+            background: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 5px;
+            margin: 0.5rem 0;
+        }
+        .nav-link {
+            color: #bdc3c7;
+            padding: 0.5rem 1rem;
+            border: none;
+            text-decoration: none;
+        }
+        .nav-link:hover {
+            color: white;
+            background: #34495e;
+        }
+        .nav-link.active {
+            color: white;
+            background: #3498db;
+        }
+        pre {
+            background: #f8f9fa;
+            border-radius: 5px;
+            padding: 1rem;
+        }
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 0;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="p-3">
+            <h4>API Documentation</h4>
+            <hr>
+            <nav class="nav flex-column">
+                <a class="nav-link" href="#overview">Overview</a>
+                <a class="nav-link" href="#authentication">Authentication</a>
+                <a class="nav-link" href="#admin">Admin APIs</a>
+                <a class="nav-link" href="#websites">Website APIs</a>
+                <a class="nav-link" href="#ai">AI Generation</a>
+                <a class="nav-link" href="#preview">Preview</a>
+                <a class="nav-link" href="#health">Health Check</a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Hero Section -->
+        <div class="hero">
+            <div class="container">
+                <h1>AI Website Builder API</h1>
+                <p class="lead">Complete API documentation for AI-driven website generation and management</p>
+                <p><strong>Base URL:</strong> <code>http://localhost:5000</code></p>
+            </div>
+        </div>
+
+        <!-- Overview -->
+        <div class="endpoint" id="overview">
+            <h2>Overview</h2>
+            <p>This API provides a complete solution for AI-driven website generation and management with role-based access control.</p>
+            
+            <h4>Features:</h4>
+            <ul>
+                <li>JWT-based authentication</li>
+                <li>Role-based access control (Admin, Editor, Viewer)</li>
+                <li>AI-powered website generation (Gemini)</li>
+                <li>Website CRUD operations</li>
+                <li>Live website preview</li>
+                <li>Rate limiting and caching</li>
+            </ul>
+        </div>
+
+        <!-- Authentication -->
+        <div class="endpoint" id="authentication">
+            <h2>Authentication</h2>
+            <p>All authenticated endpoints require a JWT token in the Authorization header.</p>
+            
+            <div class="mb-4">
+                <span class="method post">POST</span>
+                <h4>Sign Up</h4>
+                <div class="url">/signup</div>
+                <p>Register a new user account.</p>
+                <h5>Request Body:</h5>
+                <pre><code class="language-json">{
+  "email": "user@example.com",
+  "password": "password123",
+  "role": "Editor"
+}</code></pre>
+                <h5>Response:</h5>
+                <pre><code class="language-json">{
+  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+}</code></pre>
+            </div>
+
+            <div class="mb-4">
+                <span class="method post">POST</span>
+                <h4>Login</h4>
+                <div class="url">/login</div>
+                <p>Authenticate user and get JWT token.</p>
+                <h5>Request Body:</h5>
+                <pre><code class="language-json">{
+  "email": "user@example.com",
+  "password": "password123"
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Admin APIs -->
+        <div class="endpoint" id="admin">
+            <h2>Admin APIs</h2>
+            <p>Role and user management (Admin only).</p>
+            
+            <div class="mb-4">
+                <span class="method get">GET</span>
+                <h4>List Roles</h4>
+                <div class="url">/roles</div>
+                <p>Get all available roles.</p>
+                <h5>Headers:</h5>
+                <pre><code>Authorization: Bearer &lt;jwt_token&gt;</code></pre>
+            </div>
+
+            <div class="mb-4">
+                <span class="method post">POST</span>
+                <h4>Create Role</h4>
+                <div class="url">/roles</div>
+                <p>Create a new role.</p>
+                <h5>Request Body:</h5>
+                <pre><code class="language-json">{
+  "name": "Moderator",
+  "permissions": ["view_websites", "edit_own_website"]
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Website APIs -->
+        <div class="endpoint" id="websites">
+            <h2>Website APIs</h2>
+            <p>Website CRUD operations with role-based permissions.</p>
+            
+            <div class="mb-4">
+                <span class="method post">POST</span>
+                <h4>Create Website</h4>
+                <div class="url">/websites</div>
+                <p>Create a new website (Admin/Editor).</p>
+                <h5>Request Body:</h5>
+                <pre><code class="language-json">{
+  "data": {
+    "title": "My Website",
+    "hero_section": {
+      "heading": "Welcome",
+      "subheading": "Subtitle"
+    }
+  }
+}</code></pre>
+            </div>
+
+            <div class="mb-4">
+                <span class="method get">GET</span>
+                <h4>Get Websites</h4>
+                <div class="url">/websites</div>
+                <p>Get all websites (filtered by role).</p>
+            </div>
+
+            <div class="mb-4">
+                <span class="method get">GET</span>
+                <h4>Get Website</h4>
+                <div class="url">/websites/&lt;website_id&gt;</div>
+                <p>Get specific website by ID.</p>
+            </div>
+        </div>
+
+        <!-- AI Generation -->
+        <div class="endpoint" id="ai">
+            <h2>AI Generation</h2>
+            <p>Generate website content using AI models.</p>
+            
+            <div class="mb-4">
+                <span class="method post">POST</span>
+                <h4>Generate Website</h4>
+                <div class="url">/generate-website</div>
+                <p>Generate website content using AI (Gemini).</p>
+                <h5>Request Body:</h5>
+                <pre><code class="language-json">{
+  "business_type": "Restaurant",
+  "industry": "Food & Beverage",
+  "description": "Italian restaurant",
+  "model": "gemini"
+}</code></pre>
+                <h5>Response:</h5>
+                <pre><code class="language-json">{
+  "msg": "Website generated successfully",
+  "website_id": "generated_website_id",
+  "content": "generated_content",
+  "ai_model_used": "gemini"
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Preview -->
+        <div class="endpoint" id="preview">
+            <h2>Preview</h2>
+            <p>Website preview functionality.</p>
+            
+            <div class="mb-4">
+                <span class="method get">GET</span>
+                <h4>Preview Website (Public)</h4>
+                <div class="url">/preview/&lt;website_id&gt;</div>
+                <p>View website preview (no authentication required).</p>
+            </div>
+
+            <div class="mb-4">
+                <span class="method get">GET</span>
+                <h4>Preview Website (Authenticated)</h4>
+                <div class="url">/preview-auth/&lt;website_id&gt;</div>
+                <p>View website preview with authentication.</p>
+            </div>
+        </div>
+
+        <!-- Health Check -->
+        <div class="endpoint" id="health">
+            <h2>Health Check</h2>
+            <p>API health monitoring.</p>
+            
+            <div class="mb-4">
+                <span class="method get">GET</span>
+                <h4>Health Check</h4>
+                <div class="url">/health</div>
+                <p>Check API health status.</p>
+                <h5>Response:</h5>
+                <pre><code class="language-json">{
+  "status": "healthy",
+  "message": "AI Website Builder API is running"
+}</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script>
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Active navigation highlighting
+        window.addEventListener('scroll', () => {
+            let current = '';
+            const sections = document.querySelectorAll('.endpoint');
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 60) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html> 
