@@ -21,8 +21,8 @@ A production-ready backend for an AI-driven Website Builder using Python (Flask)
 
 ### 1. **Clone the Repository**
 ```bash
-git clone <your-repo-url>
-cd <repo-folder>
+git clone git@github.com:arpan-xalxo/AI-Website-Builder-.git
+cd AI-Website-Builder
 ```
 
 ### 2. **Create & Activate Virtual Environment**
