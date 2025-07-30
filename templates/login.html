@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+  <style>
+    body {
+        background: linear-gradient(135deg, #0f172a 70%, #facc15 30%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #f1f5f9;
+    }
+    .auth-box {
+      background-color: #1e293b;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      width: 100%;
+      max-width: 400px;
+    }
+    .form-control {
+      background-color: #334155;
+      border: none;
+      color: white;
+    }
+    .form-control::placeholder {
+      color: #cbd5e1;
+    }
+    .btn-dark {
+      background-color: #334155;
+      border: none;
+    }
+    a {
+      color: #facc15;
+    }
+    .alert {
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-box">
+    <h3 class="text-center mb-4">Login</h3>
+    <form id="loginForm">
+      <div class="mb-3">
+        <label>Email</label>
+        <input type="email" class="form-control" id="email" required placeholder="Enter email" />
+      </div>
+      <div class="mb-3">
+        <label>Password</label>
+        <input type="password" class="form-control" id="password" required placeholder="Enter password" />
+      </div>
+      <button type="submit" class="btn btn-dark w-100">Login</button>
+    </form>
+    <p class="text-center mt-3">Don't have an account? <a href="/signup">Sign Up</a></p>
+    <div id="loginMsg" class="text-center mt-2"></div>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const loginMsg = document.getElementById('loginMsg');
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        
+        // Clear previous messages
+        loginMsg.innerHTML = '';
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Logging in...';
+
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        try {
+            const res = await fetch("/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await res.json();
+            
+            if (res.ok && data.token) {
+                localStorage.setItem("token", data.token);
+                loginMsg.innerHTML = '<div class="alert alert-success">Login successful! Redirecting...</div>';
+                setTimeout(() => {
+                    window.location.href = "/dashboard";
+                }, 1000);
+            } else {
+                loginMsg.innerHTML = `<div class="alert alert-danger">${data.msg || 'Login failed'}</div>`;
+            }
+        } catch (error) {
+            loginMsg.innerHTML = '<div class="alert alert-danger">Network error. Please try again.</div>';
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Login';
+        }
+    });
+  </script>
+</body>
+</html>

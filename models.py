@@ -28,7 +28,7 @@ class User:
 class Role:
     def __init__(self, name, permissions):
         self.name = name
-        self.permissions = permissions  # list of allowed actions
+        self.permissions = permissions  
 
     def save(self, mongo):
         role = {
@@ -45,11 +45,12 @@ class Role:
 class Website:
     def __init__(self, owner_id, data):
         self.owner_id = owner_id
-        self.data = data  # JSON structure
+        self.data = data  
 
     def save(self, mongo):
+        from bson.objectid import ObjectId
         website = {
-            'owner_id': self.owner_id,
+            'owner_id': ObjectId(self.owner_id),
             'data': self.data
         }
         return mongo.db.websites.insert_one(website)

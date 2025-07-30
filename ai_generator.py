@@ -5,8 +5,10 @@ from auth import token_required
 from google import genai
 import os
 from dotenv import load_dotenv
+from flask import render_template
+from website import can_edit_website 
 
-# Load environment variables
+
 load_dotenv('config.env')
 
 ai_bp = Blueprint('ai', __name__)
@@ -30,7 +32,7 @@ def generate_website_content_gemini(business_type, industry, description=""):
     Return only valid JSON without any additional text or markdown formatting.
     """
     try:
-        # Try gemini-2.5-flash first, fallback to gemini-pro
+       
         try:
             response = client.models.generate_content(
                 model="gemini-2.5-flash",
@@ -43,7 +45,7 @@ def generate_website_content_gemini(business_type, industry, description=""):
                 contents=prompt
             )
         content = response.text.strip()
-        # Clean the response - remove markdown code blocks if present
+       
         if content.startswith('```json'):
             content = content[7:]
         if content.startswith('```'):
@@ -61,59 +63,112 @@ def generate_website_content(business_type, industry, description="", model="gem
     """Generate website content using Gemini only"""
     return generate_website_content_gemini(business_type, industry, description)
 
-# Generate website with AI
 @ai_bp.route('/generate-website', methods=['POST'])
 @token_required
-def generate_website(user_id, role_id):
-    from app import mongo
-    try:
-        if not can_edit_website(user_id, role_id):
-            return jsonify({'msg': 'Insufficient permissions'}), 403
-        data = request.get_json()
-        business_type = data.get('business_type', '')
-        industry = data.get('industry', '')
-        description = data.get('description', '')
-        if not business_type or not industry:
-            return jsonify({'msg': 'Business type and industry are required'}), 400
-        generated_content = generate_website_content(business_type, industry, description)
-        if not generated_content:
-            return jsonify({'msg': 'Failed to generate content. Please try again.'}), 500
+def generate_website(email, user_id, role_id):
+        from app import mongo
         try:
-            import json
-            website_data = json.loads(generated_content)
-            website_data['metadata'] = {
-                'business_type': business_type,
-                'industry': industry,
-                'description': description,
-                'generated_by_ai': True,
-                'ai_model': 'gemini'
-            }
-            website = Website(user_id, website_data)
-            result = website.save(mongo)
-            return jsonify({
-                'msg': 'Website generated successfully',
-                'website_id': str(result.inserted_id),
-                'content': website_data,
-                'ai_model_used': 'gemini'
-            }), 201
-        except json.JSONDecodeError as e:
-            print(f"JSON decode error: {e}")
-            print(f"Generated content: {generated_content}")
-            return jsonify({'msg': 'Failed to parse generated content. Please try again.'}), 500
-        except Exception as e:
-            print(f"Error creating website: {e}")
-            return jsonify({'msg': f'Error creating website: {str(e)}'}), 500
-    except Exception as e:
-        print(f"Unexpected error in generate_website: {e}")
-        return jsonify({'msg': f'Unexpected error: {str(e)}'}), 500
+            # This call now uses the secure, imported function from website.py
+            if not can_edit_website(user_id, role_id):
+                return jsonify({'msg': 'Insufficient permissions'}), 403
 
-def can_edit_website(user_id, role_id, website_owner_id=None):
+            data = request.get_json()
+            business_type = data.get('business_type', '')
+            industry = data.get('industry', '')
+            description = data.get('description', '')
+
+            if not business_type or not industry:
+                return jsonify({'msg': 'Business type and industry are required'}), 400
+
+            generated_content = generate_website_content(business_type, industry, description)
+
+            if not generated_content:
+                return jsonify({'msg': 'Failed to generate content. Please try again.'}), 500
+
+            try:
+                import json
+                website_data = json.loads(generated_content)
+                website_data['metadata'] = {
+                    'business_type': business_type,
+                    'industry': industry,
+                    'description': description,
+                    'generated_by_ai': True,
+                    'ai_model': 'gemini'
+                }
+                website = Website(user_id, website_data)
+                result = website.save(mongo)
+
+                return jsonify({
+                    'msg': 'Website generated successfully',
+                    'website_id': str(result.inserted_id),
+                    'content': website_data,
+                    'ai_model_used': 'gemini'
+                }), 201
+
+            except json.JSONDecodeError as e:
+                print(f"JSON decode error: {e}")
+                print(f"Generated content: {generated_content}")
+                return jsonify({'msg': 'Failed to parse generated content. Please try again.'}), 500
+            except Exception as e:
+                print(f"Error creating website: {e}")
+                return jsonify({'msg': f'Error creating website: {str(e)}'}), 500
+        except Exception as e:
+            print(f"Unexpected error in generate_website: {e}")
+            return jsonify({'msg': f'Unexpected error: {str(e)}'}), 500
+
+
+@ai_bp.route('/regenerate-website/<website_id>', methods=['PUT'])
+@token_required
+def regenerate_website(email, user_id, role_id, website_id):
     from app import mongo
-    role = mongo.db.roles.find_one({'_id': ObjectId(role_id)})
-    if not role:
-        return False
-    if role['name'] == 'Admin':
-        return True
-    elif role['name'] == 'Editor':
-        return str(website_owner_id) == str(user_id) if website_owner_id else True
-    return False 
+    from website import can_edit_website 
+    
+   
+    website_to_edit = mongo.db.websites.find_one({'_id': ObjectId(website_id)})
+    if not website_to_edit:
+        return jsonify({'msg': 'Website not found'}), 404
+        
+    if not can_edit_website(user_id, role_id, website_to_edit.get('owner_id')):
+        return jsonify({'msg': 'Insufficient permissions'}), 403
+
+   
+    data = request.get_json()
+    business_type = data.get('business_type', '')
+    industry = data.get('industry', '')
+    description = data.get('description', '')
+
+    if not business_type or not industry:
+        return jsonify({'msg': 'Business type and industry are required'}), 400
+
+    
+    generated_content = generate_website_content(business_type, industry, description)
+    if not generated_content:
+        return jsonify({'msg': 'Failed to generate content. Please try again.'}), 500
+        
+    try:
+        import json
+        website_data = json.loads(generated_content)
+       
+        website_data['metadata'] = {
+            'business_type': business_type,
+            'industry': industry,
+            'description': description,
+            'generated_by_ai': True,
+            'ai_model': 'gemini'
+        }
+        
+        
+        mongo.db.websites.update_one(
+            {'_id': ObjectId(website_id)},
+            {'$set': {'data': website_data}}
+        )
+        
+        return jsonify({
+            'msg': 'Website re-generated successfully',
+            'website_id': website_id,
+            'content': website_data
+        }), 200
+
+    except Exception as e:
+        print(f"Error re-generating website: {e}")
+        return jsonify({'msg': f'Error re-generating website: {str(e)}'}), 500

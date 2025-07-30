@@ -14,7 +14,7 @@ def is_admin(role_id):
 # List all roles
 @admin_bp.route('/roles', methods=['GET'])
 @token_required
-def list_roles(user_id, role_id):
+def list_roles(email,user_id, role_id):
     from app import mongo
     if not is_admin(role_id):
         return jsonify({'msg': 'Admin only'}), 403
@@ -26,7 +26,7 @@ def list_roles(user_id, role_id):
 # Create a new role
 @admin_bp.route('/roles', methods=['POST'])
 @token_required
-def create_role(user_id, role_id):
+def create_role(email,user_id, role_id):
     from app import mongo
     if not is_admin(role_id):
         return jsonify({'msg': 'Admin only'}), 403
@@ -40,9 +40,9 @@ def create_role(user_id, role_id):
     return jsonify({'msg': 'Role created'}), 201
 
 # Update a role
-@admin_bp.route('/roles/<role_id>', methods=['PUT'])
+@admin_bp.route('/roles/<role_id_param>', methods=['PUT'])
 @token_required
-def update_role(user_id, role_id, role_id_param):
+def update_role(email,user_id, role_id, role_id_param):
     from app import mongo
     if not is_admin(role_id):
         return jsonify({'msg': 'Admin only'}), 403
@@ -54,9 +54,9 @@ def update_role(user_id, role_id, role_id_param):
     return jsonify({'msg': 'Role updated'})
 
 # Delete a role
-@admin_bp.route('/roles/<role_id>', methods=['DELETE'])
+@admin_bp.route('/roles/<role_id_param>', methods=['DELETE'])
 @token_required
-def delete_role(user_id, role_id, role_id_param):
+def delete_role(email,user_id, role_id, role_id_param):
     from app import mongo
     if not is_admin(role_id):
         return jsonify({'msg': 'Admin only'}), 403
@@ -66,9 +66,9 @@ def delete_role(user_id, role_id, role_id_param):
     return jsonify({'msg': 'Role deleted'})
 
 # Assign role to user
-@admin_bp.route('/users/<user_id>/role', methods=['PUT'])
+@admin_bp.route('/users/<user_id_param>/role', methods=['PUT'])
 @token_required
-def assign_role(user_id, role_id, user_id_param):
+def assign_role(email,user_id, role_id, user_id_param):
     from app import mongo
     if not is_admin(role_id):
         return jsonify({'msg': 'Admin only'}), 403

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel - Roles</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #0f172a 70%, #facc15 30%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #e5e7eb;
+    }
+    .admin-box {
+      background-color: #111827;
+      padding: 2.5rem 2.5rem 2.5rem 2.5rem;
+      border-radius: 16px;
+      box-shadow: 0 0 32px rgba(0,0,0,0.7), 0 2px 8px rgba(250,204,21,0.04);
+      width: 100%;
+      max-width: 800px;
+      text-align: center;
+      border: 1.5px solid #232a36;
+    }
+    .admin-title {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #facc15;
+      margin-bottom: 1.5rem;
+      letter-spacing: 1px;
+    }
+    .btn-add {
+      background-color: #232a36;
+      color: #facc15;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 28px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 2rem;
+      transition: background 0.3s, color 0.3s;
+    }
+    .btn-add:hover {
+      background-color: #facc15;
+      color: #111827;
+    }
+    table {
+      width: 100%;
+      background: #181f2a;
+      color: #e5e7eb;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 0;
+    }
+    th, td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #232a36;
+    }
+    th {
+      background: #232a36;
+      color: #facc15;
+      font-weight: 700;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .action-btn {
+      margin-right: 8px;
+      background: #232a36;
+      color: #facc15;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 16px;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: background 0.3s, color 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .action-btn:hover {
+      background: #facc15;
+      color: #111827;
+      text-decoration: none;
+    }
+    @media (max-width: 900px) {
+      .admin-box {
+        max-width: 98vw;
+        padding: 1.2rem 0.5rem 1.5rem 0.5rem;
+        border-radius: 10px;
+      }
+      table, th, td {
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-box">
+    <div class="admin-title">Admin Panel - Roles</div>
+    <button class="btn btn-add mb-4" onclick="showAddRoleForm()">+ Add Role</button>
+    <div id="roles-table-container">
+      <div class="text-center text-warning">Loading roles...</div>
+    </div>
+    <div id="roleFormModal" class="modal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content bg-dark text-light">
+          <div class="modal-header">
+            <h5 class="modal-title" id="roleFormTitle">Add Role</h5>
+            <button type="button" class="btn-close btn-close-white" onclick="closeRoleForm()"></button>
+          </div>
+          <div class="modal-body">
+            <form id="roleForm">
+              <div class="mb-3">
+                <label class="form-label">Role Name</label>
+                <input type="text" class="form-control" id="roleName" required />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Permissions (comma separated)</label>
+                <input type="text" class="form-control" id="rolePermissions" placeholder="e.g. edit,delete,view" />
+              </div>
+              <input type="hidden" id="roleId" />
+              <button type="submit" class="btn btn-generate w-100">Save</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Modal helpers
+    function showAddRoleForm() {
+      document.getElementById('roleFormTitle').textContent = 'Add Role';
+      document.getElementById('roleName').value = '';
+      document.getElementById('rolePermissions').value = '';
+      document.getElementById('roleId').value = '';
+      document.getElementById('roleFormModal').style.display = 'block';
+    }
+    function showEditRoleForm(role) {
+      document.getElementById('roleFormTitle').textContent = 'Edit Role';
+      document.getElementById('roleName').value = role.name;
+      document.getElementById('rolePermissions').value = (role.permissions || []).join(',');
+      document.getElementById('roleId').value = role._id;
+      document.getElementById('roleFormModal').style.display = 'block';
+    }
+    function closeRoleForm() {
+      document.getElementById('roleFormModal').style.display = 'none';
+    }
+    // Load roles
+    async function loadRoles() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        document.getElementById('roles-table-container').innerHTML = '<div class="text-danger">Please log in as admin.</div>';
+        return;
+      }
+      try {
+        const res = await fetch('/roles', {
+          method: 'GET',
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (!res.ok) throw new Error('Failed to fetch');
+        const roles = await res.json();
+        if (!roles.length) {
+          document.getElementById('roles-table-container').innerHTML = '<div class="text-secondary">No roles found.</div>';
+          return;
+        }
+        let html = '<table class="table table-dark table-hover"><thead><tr><th>Name</th><th>Permissions</th><th>Actions</th></tr></thead><tbody>';
+        for (const r of roles) {
+          html += `<tr>
+            <td>${r.name}</td>
+            <td>${(r.permissions || []).join(', ')}</td>
+            <td>
+              <button class="action-btn" onclick='showEditRoleForm(${JSON.stringify(r)})'>Edit</button>
+              <button class="action-btn" onclick='deleteRole("${r._id}")'>Delete</button>
+            </td>
+          </tr>`;
+        }
+        html += '</tbody></table>';
+        document.getElementById('roles-table-container').innerHTML = html;
+      } catch (e) {
+        document.getElementById('roles-table-container').innerHTML = '<div class="text-danger">Error loading roles.</div>';
+      }
+    }
+    // Save role (add or edit)
+    document.getElementById('roleForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const token = localStorage.getItem('token');
+      const name = document.getElementById('roleName').value;
+      const permissions = document.getElementById('rolePermissions').value.split(',').map(s => s.trim()).filter(Boolean);
+      const id = document.getElementById('roleId').value;
+      const method = id ? 'PUT' : 'POST';
+      const url = id ? `/roles/${id}` : '/roles';
+      try {
+        const res = await fetch(url, {
+          method,
+          headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, permissions })
+        });
+        if (!res.ok) throw new Error('Failed to save role');
+        closeRoleForm();
+        loadRoles();
+      } catch (e) {
+        alert('Error saving role.');
+      }
+    });
+    // Delete role
+    async function deleteRole(id) {
+      if (!confirm('Delete this role?')) return;
+      const token = localStorage.getItem('token');
+      try {
+        const res = await fetch(`/roles/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (!res.ok) throw new Error('Failed to delete role');
+        loadRoles();
+      } catch (e) {
+        alert('Error deleting role.');
+      }
+    }
+    window.addEventListener('load', loadRoles);
+  </script>
+</body>
+</html> 

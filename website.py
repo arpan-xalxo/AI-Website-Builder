@@ -1,41 +1,14 @@
 from flask import Blueprint, request, jsonify
 from models import Website
 from bson.objectid import ObjectId
-from auth import token_required
+from auth import token_required ,can_access_website, can_edit_website
 
 website_bp = Blueprint('website', __name__)
-
-# Helper: Check user permissions
-def can_access_website(user_id, role_id, website_owner_id=None):
-    from app import mongo
-    role = mongo.db.roles.find_one({'_id': ObjectId(role_id)})
-    if not role:
-        return False
-    
-    if role['name'] == 'Admin':
-        return True
-    elif role['name'] == 'Editor':
-        return str(website_owner_id) == str(user_id)
-    elif role['name'] == 'Viewer':
-        return True  # Viewers can read all websites
-    return False
-
-def can_edit_website(user_id, role_id, website_owner_id=None):
-    from app import mongo
-    role = mongo.db.roles.find_one({'_id': ObjectId(role_id)})
-    if not role:
-        return False
-    
-    if role['name'] == 'Admin':
-        return True
-    elif role['name'] == 'Editor':
-        return str(website_owner_id) == str(user_id)
-    return False
 
 # Create website
 @website_bp.route('/websites', methods=['POST'])
 @token_required
-def create_website(user_id, role_id):
+def create_website(email,user_id, role_id):
     from app import mongo
     if not can_edit_website(user_id, role_id):
         return jsonify({'msg': 'Insufficient permissions'}), 403
@@ -54,21 +27,17 @@ def create_website(user_id, role_id):
 # Get all websites (filtered by permissions)
 @website_bp.route('/websites', methods=['GET'])
 @token_required
-def get_websites(user_id, role_id):
+def get_websites(email,user_id, role_id):
     from app import mongo
     role = mongo.db.roles.find_one({'_id': ObjectId(role_id)})
     
     if role['name'] == 'Admin':
-        # Admin sees all websites
         websites = list(mongo.db.websites.find())
     elif role['name'] == 'Editor':
-        # Editor sees only their websites
         websites = list(mongo.db.websites.find({'owner_id': ObjectId(user_id)}))
     else:
-        # Viewer sees all websites
         websites = list(mongo.db.websites.find())
     
-    # Convert ObjectIds to strings
     for w in websites:
         w['_id'] = str(w['_id'])
         w['owner_id'] = str(w['owner_id'])
@@ -78,7 +47,7 @@ def get_websites(user_id, role_id):
 # Get specific website
 @website_bp.route('/websites/<website_id>', methods=['GET'])
 @token_required
-def get_website(user_id, role_id, website_id):
+def get_website(email,user_id, role_id, website_id):
     from app import mongo
     website = Website.find_by_id(mongo, website_id)
     
@@ -96,7 +65,7 @@ def get_website(user_id, role_id, website_id):
 # Update website
 @website_bp.route('/websites/<website_id>', methods=['PUT'])
 @token_required
-def update_website(user_id, role_id, website_id):
+def update_website(email,user_id, role_id, website_id):
     from app import mongo
     website = Website.find_by_id(mongo, website_id)
     
@@ -122,7 +91,7 @@ def update_website(user_id, role_id, website_id):
 # Delete website
 @website_bp.route('/websites/<website_id>', methods=['DELETE'])
 @token_required
-def delete_website(user_id, role_id, website_id):
+def delete_website(email,user_id, role_id, website_id):
     from app import mongo
     website = Website.find_by_id(mongo, website_id)
     
