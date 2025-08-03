@@ -145,10 +145,11 @@
         const data = await res.json();
 
         if (res.ok && data.website_id) {
-          msg.innerHTML = '<div class="alert alert-success">Website generated! Redirecting now...</div>';
+          msg.innerHTML = '<div class="alert alert-success">Website generated! Redirecting...</div>';
           
-          // This is the updated, more forceful redirect logic
-          const previewUrl = `/preview/${data.website_id}?token=${token}`;
+         
+          const cacheBust = Math.random().toString(36).substring(2, 15);
+          const previewUrl = `/preview/${data.website_id}?token=${token}&cache=${cacheBust}`;
           
           setTimeout(() => {
             window.location.replace(previewUrl);
