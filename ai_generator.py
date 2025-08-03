@@ -14,7 +14,12 @@ load_dotenv('config.env')
 ai_bp = Blueprint('ai', __name__)
 
 # Configure Gemini
-client = genai.Client(api_key=os.getenv('GEMINI_API_KEY'))
+try:
+    genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
+    model = genai.GenerativeModel('gemini-1.5-flash')
+except Exception as e:
+    print(f"Could not configure Gemini: {e}")
+    model = None
 
 def generate_website_content_gemini(business_type, industry, description=""):
     """Generate website content using Gemini"""
