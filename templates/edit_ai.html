@@ -3,36 +3,104 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Edit with AI</title>
+  <title>Edit with AI | AI Website Builder</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 
   <style>
-    body { background-color: #0f172a; color: #e5e7eb; }
-    .container { max-width: 700px; }
-    .form-control { background-color: #1e293b; color: #e5e7eb; border-color: #334155; }
-    .form-control:focus { background-color: #1e293b; color: #e5e7eb; border-color: #facc15; box-shadow: none; }
-    .btn-primary { background-color: #facc15; border-color: #facc15; color: #111827; font-weight: bold; }
+    body {
+      
+      background: linear-gradient(135deg, #0f172a 70%, #facc15 30%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #f1f5f9;
+      font-family: 'Inter', sans-serif;
+    }
+    .auth-box { 
+      background-color: rgba(30, 41, 59, 0.75);
+      backdrop-filter: blur(10px);
+      padding: 2.5rem;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      width: 100%;
+      max-width: 650px; 
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .auth-title {
+      font-size: 2rem;
+      font-weight: 600;
+      color: #facc15;
+      margin-bottom: 0.5rem;
+    }
+    .auth-subtitle {
+        color: #94a3b8;
+        margin-bottom: 1.5rem;
+    }
+    .form-label {
+      font-weight: 500;
+      color: #94a3b8;
+    }
+    .form-control {
+      background-color: #334155;
+      border: 1px solid #475569;
+      color: white;
+      min-height: 50px;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .form-control::placeholder {
+      color: #94a3b8;
+    }
+    .form-control:focus {
+      background-color: #334155;
+      border-color: #facc15;
+      box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.25);
+      color: white;
+    }
+    .btn-regenerate {
+      background-color: #facc15;
+      border: none;
+      color: #1e293b;
+      font-weight: bold;
+      padding: 0.75rem;
+      border-radius: 8px;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .btn-regenerate:hover {
+      background-color: #eab308;
+      transform: translateY(-2px);
+    }
+    .btn-regenerate:disabled {
+      background-color: #94a3b8;
+      cursor: not-allowed;
+    }
+    .alert {
+      margin-top: 1rem;
+      border-radius: 8px;
+    }
   </style>
 </head>
 <body>
-  <div class="container mt-5">
-    <h2>Edit and Re-generate with AI</h2>
-    <p>Modify the details below and the AI will generate new content for your website.</p>
+  <div class="auth-box">
+    <h3 class="text-center auth-title">Edit with AI</h3>
+    <p class="text-center auth-subtitle">Modify the details below and the AI will re-generate the content for your website.</p>
     <form id="editForm" class="mt-4">
-      <div class="mb-3">
+      <div class="mb-3 text-start">
         <label for="businessType" class="form-label">Business Type</label>
         <input type="text" class="form-control" id="businessType" required>
       </div>
-      <div class="mb-3">
+      <div class="mb-3 text-start">
         <label for="industry" class="form-label">Industry</label>
         <input type="text" class="form-control" id="industry" required>
       </div>
-      <div class="mb-3">
+      <div class="mb-3 text-start">
         <label for="description" class="form-label">Description</label>
         <textarea class="form-control" id="description" rows="4"></textarea>
       </div>
-      <button type="submit" class="btn btn-primary">Re-generate Website</button>
+      <button type="submit" class="btn btn-regenerate w-100 mt-3">🔄 Re-generate Website</button>
       <div id="editMsg" class="mt-3"></div>
     </form>
   </div>
@@ -40,29 +108,34 @@
   <script>
     const websiteId = window.location.pathname.split('/')[2];
     const token = localStorage.getItem('token');
+    const msgDiv = document.getElementById('editMsg');
+    const submitBtn = document.querySelector('#editForm button[type="submit"]');
 
-   
     async function loadWebsiteData() {
-      if (!token) return;
+      if (!token) {
+        msgDiv.innerHTML = '<div class="alert alert-danger">Authentication token not found. Please log in.</div>';
+        return;
+      }
       try {
         const res = await fetch(`/websites/${websiteId}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
-        if (!res.ok) throw new Error('Failed to fetch website data');
+        if (!res.ok) throw new Error('Failed to fetch website data.');
         const website = await res.json();
-        document.getElementById('businessType').value = website.data.metadata.business_type || '';
-        document.getElementById('industry').value = website.data.metadata.industry || '';
-        document.getElementById('description').value = website.data.metadata.description || '';
+        document.getElementById('businessType').value = website.data?.metadata?.business_type || '';
+        document.getElementById('industry').value = website.data?.metadata?.industry || '';
+        document.getElementById('description').value = website.data?.metadata?.description || '';
       } catch (e) {
-        document.getElementById('editMsg').textContent = e.message;
+        msgDiv.innerHTML = `<div class="alert alert-danger">${e.message}</div>`;
       }
     }
 
-    
     document.getElementById('editForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-      const msgDiv = document.getElementById('editMsg');
-      msgDiv.textContent = 'Generating... Please wait.';
+      
+      msgDiv.innerHTML = '';
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...';
 
       const updatedData = {
         business_type: document.getElementById('businessType').value,
@@ -78,9 +151,13 @@
         });
         const result = await res.json();
         if (!res.ok) throw new Error(result.msg || 'Failed to re-generate');
-        msgDiv.textContent = 'Website re-generated successfully! You can now close this page.';
+        
+        msgDiv.innerHTML = '<div class="alert alert-success">Website re-generated successfully! You can now close this page.</div>';
+        
       } catch (e) {
-        msgDiv.textContent = `Error: ${e.message}`;
+        msgDiv.innerHTML = `<div class="alert alert-danger">Error: ${e.message}</div>`;
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '🔄 Re-generate Website';
       }
     });
 

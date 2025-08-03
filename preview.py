@@ -5,7 +5,6 @@ from auth import token_required ,can_access_website
 
 preview_bp = Blueprint('preview', __name__)
 
-# Secure, authenticated website preview
 @preview_bp.route('/preview/<website_id>')
 @token_required
 def preview_website(email, user_id, role_id, website_id): 

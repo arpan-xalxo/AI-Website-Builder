@@ -31,6 +31,11 @@ def get_websites(email,user_id, role_id):
     from app import mongo
     role = mongo.db.roles.find_one({'_id': ObjectId(role_id)})
     
+    # Add this check to handle cases where the role doesn't exist
+    if not role:
+        return jsonify({'msg': 'Role not found for user, cannot determine permissions.'}), 404
+
+
     if role['name'] == 'Admin':
         websites = list(mongo.db.websites.find())
     elif role['name'] == 'Editor':

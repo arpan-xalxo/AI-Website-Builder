@@ -3,226 +3,325 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Panel - Roles</title>
+  <title>Admin Panel | AI Website Builder</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 
   <style>
     body {
+      /* Matching the theme background */
       background: linear-gradient(135deg, #0f172a 70%, #facc15 30%);
       min-height: 100vh;
       display: flex;
       justify-content: center;
-      align-items: center;
-      color: #e5e7eb;
+      align-items: flex-start; /* Align to top */
+      padding-top: 5rem;
+      padding-bottom: 5rem;
+      color: #f1f5f9;
+      font-family: 'Inter', sans-serif;
     }
-    .admin-box {
-      background-color: #111827;
-      padding: 2.5rem 2.5rem 2.5rem 2.5rem;
+    .admin-container {
+      /* Using the same styled box */
+      background-color: rgba(30, 41, 59, 0.75);
+      backdrop-filter: blur(10px);
+      padding: 2.5rem;
       border-radius: 16px;
-      box-shadow: 0 0 32px rgba(0,0,0,0.7), 0 2px 8px rgba(250,204,21,0.04);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
       width: 100%;
-      max-width: 800px;
-      text-align: center;
-      border: 1.5px solid #232a36;
+      max-width: 900px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
     .admin-title {
-      font-size: 2.2rem;
-      font-weight: 700;
+      font-size: 2rem;
+      font-weight: 600;
       color: #facc15;
-      margin-bottom: 1.5rem;
-      letter-spacing: 1px;
+    }
+    .title-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
     }
     .btn-add {
-      background-color: #232a36;
-      color: #facc15;
+      background-color: #facc15;
       border: none;
-      border-radius: 10px;
-      padding: 12px 28px;
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 2rem;
-      transition: background 0.3s, color 0.3s;
+      color: #1e293b;
+      font-weight: bold;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background-color 0.3s ease, transform 0.2s ease;
     }
     .btn-add:hover {
-      background-color: #facc15;
-      color: #111827;
+      background-color: #eab308;
+      transform: translateY(-2px);
     }
-    table {
-      width: 100%;
-      background: #181f2a;
+    .table-responsive {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .table {
+      background: #334155;
       color: #e5e7eb;
-      border-radius: 10px;
+      border-radius: 8px;
       overflow: hidden;
       margin-bottom: 0;
+      border: 1px solid #475569;
     }
     th, td {
       padding: 1rem;
       text-align: left;
-      border-bottom: 1px solid #232a36;
+      vertical-align: middle;
+      border-bottom: 1px solid #475569;
     }
-    th {
-      background: #232a36;
+    thead th {
+      background: #1e293b;
       color: #facc15;
-      font-weight: 700;
+      font-weight: 600;
+      border-bottom: 2px solid #475569;
+    }
+    tbody tr {
+        transition: background-color 0.2s ease;
+    }
+    tbody tr:hover {
+        background-color: #475569;
     }
     tr:last-child td {
       border-bottom: none;
     }
     .action-btn {
-      margin-right: 8px;
-      background: #232a36;
-      color: #facc15;
-      border: none;
+      margin-right: 0.5rem;
+      background: #475569;
+      color: #f1f5f9;
+      border: 1px solid #64748b;
       border-radius: 6px;
-      padding: 6px 16px;
-      font-size: 1rem;
+      padding: 0.3rem 0.8rem;
+      font-size: 0.9rem;
       font-weight: 500;
-      transition: background 0.3s, color 0.3s;
-      text-decoration: none;
-      display: inline-block;
+      transition: all 0.2s ease;
     }
     .action-btn:hover {
       background: #facc15;
-      color: #111827;
-      text-decoration: none;
+      color: #1e293b;
+      border-color: #facc15;
+      transform: translateY(-1px);
     }
-    @media (max-width: 900px) {
-      .admin-box {
-        max-width: 98vw;
-        padding: 1.2rem 0.5rem 1.5rem 0.5rem;
-        border-radius: 10px;
-      }
-      table, th, td {
-        font-size: 0.95rem;
-      }
+    .modal {
+        background-color: rgba(0,0,0,0.5);
+    }
+    .modal-content {
+        background-color: #1e293b;
+        border: 1px solid #475569;
+        border-radius: 16px;
+    }
+    .modal-header {
+        border-bottom: 1px solid #475569;
+    }
+    .modal-title {
+        color: #facc15;
+    }
+    .form-control {
+      background-color: #334155;
+      border: 1px solid #475569;
+      color: white;
+    }
+    .form-control:focus {
+      background-color: #334155;
+      border-color: #facc15;
+      box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.25);
+      color: white;
+    }
+    .btn-save {
+      background-color: #facc15;
+      border: none;
+      color: #1e293b;
+      font-weight: bold;
+    }
+    .btn-save:hover {
+        background-color: #eab308;
     }
   </style>
 </head>
 <body>
-  <div class="admin-box">
-    <div class="admin-title">Admin Panel - Roles</div>
-    <button class="btn btn-add mb-4" onclick="showAddRoleForm()">+ Add Role</button>
-    <div id="roles-table-container">
-      <div class="text-center text-warning">Loading roles...</div>
+  <div class="admin-container">
+    <div class="title-bar">
+      <h3 class="admin-title">Admin Panel - Roles</h3>
+      <button class="btn btn-add" onclick="showAddRoleForm()">+ Add New Role</button>
     </div>
-    <div id="roleFormModal" class="modal" tabindex="-1">
-      <div class="modal-dialog">
-        <div class="modal-content bg-dark text-light">
-          <div class="modal-header">
-            <h5 class="modal-title" id="roleFormTitle">Add Role</h5>
-            <button type="button" class="btn-close btn-close-white" onclick="closeRoleForm()"></button>
-          </div>
-          <div class="modal-body">
-            <form id="roleForm">
-              <div class="mb-3">
-                <label class="form-label">Role Name</label>
-                <input type="text" class="form-control" id="roleName" required />
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Permissions (comma separated)</label>
-                <input type="text" class="form-control" id="rolePermissions" placeholder="e.g. edit,delete,view" />
-              </div>
-              <input type="hidden" id="roleId" />
-              <button type="submit" class="btn btn-generate w-100">Save</button>
-            </form>
-          </div>
+    <div id="roles-table-container" class="table-responsive">
+      <div class="text-center p-5">
+        <div class="spinner-border text-warning" role="status">
+          <span class="visually-hidden">Loading...</span>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Add/Edit Role Modal -->
+  <div id="roleFormModal" class="modal" tabindex="-1" style="display:none;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="roleFormTitle">Add Role</h5>
+          <button type="button" class="btn-close btn-close-white" onclick="closeRoleForm()"></button>
+        </div>
+        <div class="modal-body">
+          <form id="roleForm">
+            <input type="hidden" id="roleId" />
+            <div class="mb-3">
+              <label for="roleName" class="form-label">Role Name</label>
+              <input type="text" class="form-control" id="roleName" required />
+            </div>
+            <div class="mb-3">
+              <label for="rolePermissions" class="form-label">Permissions (comma-separated)</label>
+              <input type="text" class="form-control" id="rolePermissions" placeholder="e.g. view_websites,edit_own_website" />
+            </div>
+            <button type="submit" class="btn btn-save w-100 mt-2">Save Role</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteConfirmModal" class="modal" tabindex="-1" style="display:none;">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Confirm Deletion</h5>
+            <button type="button" class="btn-close btn-close-white" onclick="closeDeleteModal()"></button>
+          </div>
+          <div class="modal-body">
+            <p>Are you sure you want to delete this role? This action cannot be undone.</p>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+            <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Modal helpers
+    const token = localStorage.getItem('token');
+    const roleModal = new bootstrap.Modal(document.getElementById('roleFormModal'));
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+
     function showAddRoleForm() {
-      document.getElementById('roleFormTitle').textContent = 'Add Role';
-      document.getElementById('roleName').value = '';
-      document.getElementById('rolePermissions').value = '';
+      document.getElementById('roleForm').reset();
+      document.getElementById('roleFormTitle').textContent = 'Add New Role';
       document.getElementById('roleId').value = '';
-      document.getElementById('roleFormModal').style.display = 'block';
+      roleModal.show();
     }
+
     function showEditRoleForm(role) {
-      document.getElementById('roleFormTitle').textContent = 'Edit Role';
+      document.getElementById('roleForm').reset();
+      document.getElementById('roleFormTitle').textContent = `Edit Role: ${role.name}`;
       document.getElementById('roleName').value = role.name;
-      document.getElementById('rolePermissions').value = (role.permissions || []).join(',');
+      document.getElementById('rolePermissions').value = (role.permissions || []).join(', ');
       document.getElementById('roleId').value = role._id;
-      document.getElementById('roleFormModal').style.display = 'block';
+      roleModal.show();
     }
+
     function closeRoleForm() {
-      document.getElementById('roleFormModal').style.display = 'none';
+      roleModal.hide();
     }
-    // Load roles
+
+    function closeDeleteModal() {
+        deleteModal.hide();
+    }
+
     async function loadRoles() {
-      const token = localStorage.getItem('token');
+      const container = document.getElementById('roles-table-container');
       if (!token) {
-        document.getElementById('roles-table-container').innerHTML = '<div class="text-danger">Please log in as admin.</div>';
+        container.innerHTML = '<div class="alert alert-danger">Please log in as an administrator.</div>';
         return;
       }
       try {
-        const res = await fetch('/roles', {
-          method: 'GET',
-          headers: { 'Authorization': 'Bearer ' + token }
-        });
-        if (!res.ok) throw new Error('Failed to fetch');
+        const res = await fetch('/roles', { headers: { 'Authorization': 'Bearer ' + token } });
+        if (!res.ok) throw new Error('Failed to fetch roles. You may not have admin permissions.');
+        
         const roles = await res.json();
         if (!roles.length) {
-          document.getElementById('roles-table-container').innerHTML = '<div class="text-secondary">No roles found.</div>';
+          container.innerHTML = '<div class="text-center p-5 text-secondary">No roles found.</div>';
           return;
         }
-        let html = '<table class="table table-dark table-hover"><thead><tr><th>Name</th><th>Permissions</th><th>Actions</th></tr></thead><tbody>';
+
+        let tableHtml = `
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Permissions</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>`;
         for (const r of roles) {
-          html += `<tr>
-            <td>${r.name}</td>
-            <td>${(r.permissions || []).join(', ')}</td>
-            <td>
-              <button class="action-btn" onclick='showEditRoleForm(${JSON.stringify(r)})'>Edit</button>
-              <button class="action-btn" onclick='deleteRole("${r._id}")'>Delete</button>
-            </td>
-          </tr>`;
+          tableHtml += `
+            <tr>
+              <td>${r.name}</td>
+              <td>${(r.permissions || []).join(', ')}</td>
+              <td class="text-end">
+                <button class="action-btn" onclick='showEditRoleForm(${JSON.stringify(r)})'>✏️ Edit</button>
+                <button class="action-btn" onclick='confirmDeleteRole("${r._id}")'>🗑️ Delete</button>
+              </td>
+            </tr>`;
         }
-        html += '</tbody></table>';
-        document.getElementById('roles-table-container').innerHTML = html;
+        tableHtml += '</tbody></table>';
+        container.innerHTML = tableHtml;
       } catch (e) {
-        document.getElementById('roles-table-container').innerHTML = '<div class="text-danger">Error loading roles.</div>';
+        container.innerHTML = `<div class="alert alert-danger">${e.message}</div>`;
       }
     }
-    // Save role (add or edit)
+
     document.getElementById('roleForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-      const token = localStorage.getItem('token');
       const name = document.getElementById('roleName').value;
       const permissions = document.getElementById('rolePermissions').value.split(',').map(s => s.trim()).filter(Boolean);
       const id = document.getElementById('roleId').value;
       const method = id ? 'PUT' : 'POST';
       const url = id ? `/roles/${id}` : '/roles';
+
       try {
         const res = await fetch(url, {
           method,
           headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, permissions })
         });
-        if (!res.ok) throw new Error('Failed to save role');
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.msg || 'Failed to save role.');
+        }
         closeRoleForm();
         loadRoles();
       } catch (e) {
-        alert('Error saving role.');
+        alert(`Error: ${e.message}`);
       }
     });
-    // Delete role
+
+    function confirmDeleteRole(id) {
+        const confirmBtn = document.getElementById('confirmDeleteBtn');
+        confirmBtn.onclick = () => deleteRole(id);
+        deleteModal.show();
+    }
+
     async function deleteRole(id) {
-      if (!confirm('Delete this role?')) return;
-      const token = localStorage.getItem('token');
       try {
         const res = await fetch(`/roles/${id}`, {
           method: 'DELETE',
           headers: { 'Authorization': 'Bearer ' + token }
         });
-        if (!res.ok) throw new Error('Failed to delete role');
+        if (!res.ok) throw new Error('Failed to delete role.');
+        closeDeleteModal();
         loadRoles();
       } catch (e) {
-        alert('Error deleting role.');
+        alert(`Error: ${e.message}`);
       }
     }
+
     window.addEventListener('load', loadRoles);
   </script>
 </body>
-</html> 
+</html>
