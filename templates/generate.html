@@ -9,7 +9,7 @@
 
   <style>
     body {
-      
+      /* Matching the login/dashboard page background */
       background: linear-gradient(135deg, #0f172a 70%, #facc15 30%);
       min-height: 100vh;
       display: flex;
@@ -18,14 +18,14 @@
       color: #f1f5f9;
       font-family: 'Inter', sans-serif;
     }
-    .auth-box { 
+    .auth-box { /* Reusing the styled box from login/signup */
       background-color: rgba(30, 41, 59, 0.75);
       backdrop-filter: blur(10px);
       padding: 2.5rem;
       border-radius: 16px;
       box-shadow: 0 8px 32px rgba(0,0,0,0.3);
       width: 100%;
-      max-width: 650px;
+      max-width: 650px; /* Wider for more content */
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
     .auth-title {
@@ -43,7 +43,6 @@
       border: 1px solid #475569;
       color: white;
       min-height: 50px;
-
       padding: 0.75rem 1rem;
       border-radius: 8px;
       transition: border-color 0.3s ease, box-shadow 0.3s ease;
@@ -93,7 +92,6 @@
 <body>
   <div class="auth-box">
     <h3 class="text-center auth-title">Generate Website with AI</h3>
-
     <form id="generateForm">
       <div class="mb-3 text-start">
         <label for="businessType" class="form-label">Business Type</label>
@@ -103,7 +101,6 @@
         <label for="industry" class="form-label">Industry</label>
         <input type="text" class="form-control" id="industry" required placeholder="e.g. Food & Beverage, SaaS, etc." />
       </div>
-      
       <div class="mb-3 text-start">
         <label for="description" class="form-label">Brief Description (Optional)</label>
         <textarea class="form-control" id="description" rows="3" placeholder="Describe your business, its mission, and key services."></textarea>
@@ -139,7 +136,7 @@
       }
 
       try {
-        const res = await fetch('/ai/generate-website', {
+        const res = await fetch(`/ai/generate-website?t=${new Date().getTime()}`, {
           method: 'POST',
           headers: {
             'Authorization': 'Bearer ' + token,
@@ -151,7 +148,6 @@
 
         if (res.ok && data.website_id) {
           msg.innerHTML = '<div class="alert alert-success">Website generated! Redirecting to preview...</div>';
-          
           setTimeout(() => {
             window.location.href = '/preview/' + data.website_id + '?token=' + localStorage.getItem('token');
           }, 1500);
