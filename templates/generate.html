@@ -114,12 +114,9 @@
     document.getElementById('generateForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       const msg = document.getElementById('generateMsg');
-      const contentDiv = document.getElementById('generatedContent');
       const submitBtn = e.target.querySelector('button[type="submit"]');
 
       msg.innerHTML = '';
-      contentDiv.style.display = 'none';
-      contentDiv.innerHTML = '';
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...';
 
@@ -144,20 +141,24 @@
           },
           body: JSON.stringify({ business_type: businessType, industry, description })
         });
+        
         const data = await res.json();
 
         if (res.ok && data.website_id) {
-          msg.innerHTML = '<div class="alert alert-success">Website generated! Redirecting to preview...</div>';
+          msg.innerHTML = '<div class="alert alert-success">Website generated! Redirecting now...</div>';
+          
+          // This is the updated, more forceful redirect logic
+          const previewUrl = `/preview/${data.website_id}?token=${token}`;
+          
           setTimeout(() => {
-            window.location.href = '/preview/' + data.website_id + '?token=' + localStorage.getItem('token');
-          }, 1500);
+            window.location.replace(previewUrl);
+          }, 1000);
+
         } else {
-          msg.innerHTML = `<div class="alert alert-danger">${data.msg || 'Failed to generate content.'}</div>`;
-          submitBtn.disabled = false;
-          submitBtn.textContent = '✨ Generate Website';
+          throw new Error(data.msg || 'Failed to generate content.');
         }
       } catch (error) {
-        msg.innerHTML = '<div class="alert alert-danger">An error occurred. Please try again.</div>';
+        msg.innerHTML = `<div class="alert alert-danger">${error.message}</div>`;
         submitBtn.disabled = false;
         submitBtn.textContent = '✨ Generate Website';
       }
