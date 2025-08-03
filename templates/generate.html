@@ -133,7 +133,7 @@
       }
 
       try {
-        const res = await fetch(`/ai/generate-website?t=${new Date().getTime()}`, {
+        const res = await fetch(`/ai/generate-website`, {
           method: 'POST',
           headers: {
             'Authorization': 'Bearer ' + token,
@@ -147,9 +147,11 @@
         if (res.ok && data.website_id) {
           msg.innerHTML = '<div class="alert alert-success">Website generated! Redirecting...</div>';
           
-         
+          // Generate a random string for the URL path
           const cacheBust = Math.random().toString(36).substring(2, 15);
-          const previewUrl = `/preview/${data.website_id}?token=${token}&cache=${cacheBust}`;
+          
+          // Create the new, unique URL structure
+          const previewUrl = `/preview/${data.website_id}/${cacheBust}?token=${token}`;
           
           setTimeout(() => {
             window.location.replace(previewUrl);

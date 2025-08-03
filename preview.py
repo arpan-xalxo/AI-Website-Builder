@@ -5,10 +5,12 @@ from auth import token_required, can_access_website
 
 preview_bp = Blueprint('preview', __name__)
 
-# Secure, authenticated website preview
+# Add a route that accepts an optional, random cache-busting segment in the path
+@preview_bp.route('/preview/<website_id>/<cache_bust>')
 @preview_bp.route('/preview/<website_id>')
 @token_required
-def preview_website(email, user_id, role_id, website_id): 
+def preview_website(email, user_id, role_id, website_id, cache_bust=None): 
+    # The 'cache_bust' parameter is ignored. Its only purpose is to make the URL unique.
     from app import mongo
 
     try:
@@ -27,13 +29,10 @@ def preview_website(email, user_id, role_id, website_id):
         if 'metadata' in website_data:
             website_data['title'] = website_data['metadata'].get('business_type', 'Business Website')
 
-        # Create the HTML response from the template
         html_response = render_template('website_template.html', website_data=website_data)
-        
-        # Create a response object to which we can add headers
         response = make_response(html_response)
         
-        # Add headers to prevent caching at all levels
+        # Keep the forceful no-cache headers as a best practice
         response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
         response.headers['Pragma'] = 'no-cache'
         response.headers['Expires'] = '0'
