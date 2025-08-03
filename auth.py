@@ -24,7 +24,7 @@ def signup():
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
-    role_name = data.get('role', 'Viewer')  # Default role is Viewer
+    role_name = data.get('role', 'Viewer')  
 
     if User.find_by_email(mongo, email):
         return jsonify({'msg': 'User already exists'}), 400
