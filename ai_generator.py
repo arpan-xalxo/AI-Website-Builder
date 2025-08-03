@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from models import Website
 from bson.objectid import ObjectId
 from auth import token_required
-from google import genai
+import google.generativeai as genai
 import os
 from dotenv import load_dotenv
 from flask import render_template
