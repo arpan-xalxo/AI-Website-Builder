@@ -9,19 +9,17 @@
 
   <style>
     body {
-      /* Matching the theme background */
       background: linear-gradient(135deg, #0f172a 70%, #facc15 30%);
       min-height: 100vh;
       display: flex;
       justify-content: center;
-      align-items: flex-start; /* Align to top */
+      align-items: flex-start; 
       padding-top: 5rem;
       padding-bottom: 5rem;
       color: #f1f5f9;
       font-family: 'Inter', sans-serif;
     }
     .admin-container {
-      /* Using the same styled box */
       background-color: rgba(30, 41, 59, 0.75);
       backdrop-filter: blur(10px);
       padding: 2.5rem;
@@ -157,7 +155,7 @@
     </div>
   </div>
 
-  <!-- Add/Edit Role Modal -->
+  
   <div id="roleFormModal" class="modal" tabindex="-1" style="display:none;">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -183,7 +181,7 @@
     </div>
   </div>
 
-  <!-- Delete Confirmation Modal -->
+  
   <div id="deleteConfirmModal" class="modal" tabindex="-1" style="display:none;">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -220,6 +218,7 @@
       document.getElementById('roleFormTitle').textContent = `Edit Role: ${role.name}`;
       document.getElementById('roleName').value = role.name;
       document.getElementById('rolePermissions').value = (role.permissions || []).join(', ');
+      
       document.getElementById('roleId').value = role._id;
       roleModal.show();
     }

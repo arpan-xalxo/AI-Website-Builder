@@ -6,6 +6,7 @@ import google.generativeai as genai
 import os
 from dotenv import load_dotenv
 import json
+import sys
 
 # Load environment variables
 load_dotenv('config.env')
@@ -17,7 +18,7 @@ try:
     genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
     model = genai.GenerativeModel('gemini-1.5-flash')
 except Exception as e:
-    print(f"Could not configure Gemini: {e}")
+    print(f"Could not configure Gemini: {e}", file=sys.stderr)
     model = None
 
 def generate_website_content_gemini(business_type, industry, description=""):
@@ -28,18 +29,17 @@ def generate_website_content_gemini(business_type, industry, description=""):
     prompt = f"""
     Create professional website content for a {business_type} business in the {industry} industry.
     Business description: {description}
-    Generate a JSON structure with the following sections:
-    1. Hero section (heading, subheading)
-    2. About section (title, content)
-    3. Services section (array of 3-5 services with name and description)
-    4. Contact section (title, content)
-    Return only valid JSON without any additional text or markdown formatting.
+    Generate a JSON structure with the following keys:
+    1. "hero_section" (an object with "heading" and "subheading")
+    2. "about_section" (an object with "title" and "content")
+    3. "services_section" (an array of 3-5 objects, each with "name" and "description")
+    4. "contact_section" (an object with "title" and "content")
+    Return only valid JSON without any additional text or markdown formatting. The keys must be exactly "hero_section", "about_section", "services_section", and "contact_section".
     """
     try:
         response = model.generate_content(prompt)
         content = response.text.strip()
         
-        # Clean up potential markdown code fences
         if content.startswith('```json'):
             content = content[7:]
         if content.startswith('```'):
@@ -49,10 +49,10 @@ def generate_website_content_gemini(business_type, industry, description=""):
         content = content.strip()
         return content
     except Exception as e:
-        print(f"Gemini API Error: {e}")
+        print(f"Gemini API Error: {e}", file=sys.stderr)
         return None
 
-# Generate website with AI
+
 @ai_bp.route('/generate-website', methods=['POST'])
 @token_required
 def generate_website(email, user_id, role_id):
@@ -81,6 +81,8 @@ def generate_website(email, user_id, role_id):
             'generated_by_ai': True,
             'ai_model': 'gemini'
         }
+        
+        
         website = Website(user_id, website_data)
         result = website.save(mongo)
         
@@ -94,9 +96,10 @@ def generate_website(email, user_id, role_id):
     except json.JSONDecodeError:
         return jsonify({'msg': 'Failed to parse AI-generated content. Please try again.'}), 500
     except Exception as e:
+        print(f"!!! UNEXPECTED ERROR in generate_website: {e}", file=sys.stderr)
         return jsonify({'msg': f'An unexpected error occurred: {str(e)}'}), 500
 
-# Re-generate website with AI
+
 @ai_bp.route('/regenerate-website/<website_id>', methods=['PUT'])
 @token_required
 def regenerate_website(email, user_id, role_id, website_id):

@@ -23,7 +23,7 @@ mongo = PyMongo(app)
 # Initialize middleware
 init_middleware(app)
 
-# Add security headers to all responses
+
 @app.after_request
 def add_security_headers(response):
     return security_headers(response)

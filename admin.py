@@ -11,7 +11,7 @@ def is_admin(role_id):
     role = mongo.db.roles.find_one({'_id': ObjectId(role_id)})
     return role and role['name'] == 'Admin'
 
-# List all roles
+# all roles
 @admin_bp.route('/roles', methods=['GET'])
 @token_required
 def list_roles(email,user_id, role_id):

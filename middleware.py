@@ -6,11 +6,9 @@ import time
 import logging
 from functools import wraps
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Initialize rate limiter and cache
 limiter = Limiter(
     key_func=get_remote_address,
     default_limits=["200 per day", "50 per hour"]
@@ -26,7 +24,6 @@ def init_middleware(app):
     limiter.init_app(app)
     cache.init_app(app)
     
-    # Request logging middleware
     @app.before_request
     def log_request():
         g.start_time = time.time()
@@ -63,13 +60,13 @@ def init_middleware(app):
             'message': 'The requested resource was not found.'
         }), 404
 
-# Rate limiting decorators
+
 def rate_limit_by_user(limit_string):
     """Rate limit decorator that uses user ID from JWT token"""
     def decorator(f):
         @wraps(f)
         def wrapped(*args, **kwargs):
-            # Extract user_id from JWT token if available
+            
             user_id = None
             if 'Authorization' in request.headers:
                 try:
@@ -81,14 +78,14 @@ def rate_limit_by_user(limit_string):
                 except:
                     pass
             
-            # Use user_id for rate limiting if available, otherwise use IP
+            
             key = f"user:{user_id}" if user_id else get_remote_address()
             
-            # Simple rate limiting logic (you can enhance this)
+            
             cache_key = f"rate_limit:{key}"
             current_requests = cache.get(cache_key) or 0
             
-            if current_requests >= 50:  # 50 requests per hour per user
+            if current_requests >= 50:  
                 return jsonify({
                     'error': 'Rate limit exceeded',
                     'message': 'Too many requests. Please try again later.'
@@ -99,28 +96,28 @@ def rate_limit_by_user(limit_string):
         return wrapped
     return decorator
 
-# Caching decorators
+
 def cache_response(timeout=300):
     """Cache response decorator"""
     def decorator(f):
         @wraps(f)
         def wrapped(*args, **kwargs):
-            # Create cache key based on function name and arguments
+           
             cache_key = f"{f.__name__}:{request.path}:{request.args}"
             
-            # Try to get from cache
+            
             cached_response = cache.get(cache_key)
             if cached_response:
                 return cached_response
             
-            # Execute function and cache result
+            
             response = f(*args, **kwargs)
             cache.set(cache_key, response, timeout=timeout)
             return response
         return wrapped
     return decorator
 
-# Security middleware
+
 def security_headers(response):
     """Add security headers to all responses"""
     response.headers['X-Content-Type-Options'] = 'nosniff'

@@ -24,31 +24,33 @@ def create_website(email,user_id, role_id):
         'website_id': str(result.inserted_id)
     }), 201
 
-# Get all websites (filtered by permissions)
 @website_bp.route('/websites', methods=['GET'])
 @token_required
-def get_websites(email,user_id, role_id):
+def get_websites(email, user_id, role_id):
     from app import mongo
     role = mongo.db.roles.find_one({'_id': ObjectId(role_id)})
     
-    # Add this check to handle cases where the role doesn't exist
     if not role:
         return jsonify({'msg': 'Role not found for user, cannot determine permissions.'}), 404
-
 
     if role['name'] == 'Admin':
         websites = list(mongo.db.websites.find())
     elif role['name'] == 'Editor':
         websites = list(mongo.db.websites.find({'owner_id': ObjectId(user_id)}))
     else:
+       
         websites = list(mongo.db.websites.find())
     
     for w in websites:
         w['_id'] = str(w['_id'])
-        w['owner_id'] = str(w['owner_id'])
+        owner_obj_id = w.get('owner_id')
+        if owner_obj_id:
+            w['owner_id'] = str(owner_obj_id)
+            owner = mongo.db.users.find_one({'_id': owner_obj_id})
+            if owner:
+                w['owner_email'] = owner.get('email')
     
     return jsonify(websites)
-
 # Get specific website
 @website_bp.route('/websites/<website_id>', methods=['GET'])
 @token_required

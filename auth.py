@@ -51,7 +51,7 @@ def login():
     if not user or not User.check_password(user['password_hash'], password):
         return jsonify({'msg': 'Invalid credentials'}), 401
     
-    # Use the generate_token function for consistency
+    
     token = generate_token(str(user['_id']), str(user['role_id']))
     return jsonify({'token': token}), 200
 
@@ -66,7 +66,7 @@ def token_required(f):
         if 'Authorization' in request.headers:
             auth_header = request.headers['Authorization']
             try:
-                token = auth_header.split(' ')[1]  # Bearer <token>
+                token = auth_header.split(' ')[1] 
             except IndexError:
                 return jsonify({'msg': 'Invalid token format!'}), 401
         

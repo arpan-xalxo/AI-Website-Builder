@@ -1,56 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ website_data.get('title', 'Business Website') }}</title>
+    <title>{{ website_data.data.get('metadata', {}).get('business_type', 'Business Website') }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-
     <style>
-        .hero-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 100px 0;
-            text-align: center;
-        }
-        .section {
-            padding: 80px 0;
-        }
-        .service-card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
-            margin-bottom: 30px;
-        }
-        .service-card:hover {
-            transform: translateY(-5px);
-        }
-        .contact-section {
-            background-color: #f8f9fa;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 25px;
-            padding: 12px 30px;
-        }
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
-        }
+        .hero-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 100px 0; text-align: center; }
+        .section { padding: 80px 0; }
+        .service-card { border: none; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; margin-bottom: 30px; height: 100%; }
+        .service-card:hover { transform: translateY(-5px); }
+        .contact-section { background-color: #f8f9fa; }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 25px; padding: 12px 30px; }
+        .btn-primary:hover { background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%); }
     </style>
 </head>
 <body>
-    <!-- Hero Section -->
     <section class="hero-section">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 mx-auto">
-                    <h1 class="display-4 fw-bold mb-4">{{ website_data.get('hero_section', {}).get('heading', 'Welcome to Our Business') }}</h1>
-                    <p class="lead mb-4">{{ website_data.get('hero_section', {}).get('subheading', 'We provide amazing services to help your business grow') }}</p>
+                    <h1 class="display-4 fw-bold mb-4">{{ website_data.data.get('hero_section', {}).get('heading', 'Welcome to Our Professional Business') }}</h1>
+                    <p class="lead mb-4">{{ website_data.data.get('hero_section', {}).get('subheading', 'We provide high-quality solutions and amazing services to help your business succeed and grow in a competitive market.') }}</p>
                     <a href="#contact" class="btn btn-primary btn-lg">Get Started</a>
                 </div>
             </div>
@@ -61,60 +34,57 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 mx-auto text-center">
-                    <h2 class="mb-4">{{ website_data.get('about_section', {}).get('title', 'About Us') }}</h2>
-                    <p class="lead">{{ website_data.get('about_section', {}).get('content', 'We are a dedicated team committed to delivering exceptional services and solutions to our clients.') }}</p>
+                    <h2 class="mb-4">{{ website_data.data.get('about_section', {}).get('title', 'About Our Company') }}</h2>
+                    <p class="lead">{{ website_data.data.get('about_section', {}).get('content', 'We are a team of dedicated professionals committed to delivering exceptional services and innovative solutions. Our mission is to build lasting relationships with our clients by exceeding their expectations and gaining their trust through outstanding performance.') }}</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Services Section -->
     <section class="section" id="services" style="background-color: #f8f9fa;">
         <div class="container">
-            <div class="row">
-                <div class="col-lg-8 mx-auto text-center mb-5">
-                    <h2 class="mb-4">Our Services</h2>
-                    <p class="lead">Discover what we can do for your business</p>
-                </div>
+            <div class="text-center mb-5">
+                <h2>Our Services</h2>
+                <p class="lead">Discover what we can do for your business.</p>
             </div>
             <div class="row">
-                {% if website_data.get('services_section') %}
-                    {% for service in website_data.get('services_section', []) %}
+                {% if website_data.data.get('services_section') %}
+                    {% for service in website_data.data.get('services_section', []) %}
                     <div class="col-lg-4 col-md-6">
-                        <div class="card service-card h-100">
-                            <div class="card-body text-center">
+                        <div class="card service-card">
+                            <div class="card-body text-center p-4">
                                 <i class="fas fa-star fa-3x text-primary mb-3"></i>
-                                <h5 class="card-title">{{ service.get('name', 'Service') }}</h5>
-                                <p class="card-text">{{ service.get('description', 'Service description') }}</p>
+                                <h5 class="card-title">{{ service.get('name', 'Dynamic Service') }}</h5>
+                                <p class="card-text">{{ service.get('description', 'A description of the dynamic service provided.') }}</p>
                             </div>
                         </div>
                     </div>
                     {% endfor %}
                 {% else %}
                     <div class="col-lg-4 col-md-6">
-                        <div class="card service-card h-100">
-                            <div class="card-body text-center">
-                                <i class="fas fa-cog fa-3x text-primary mb-3"></i>
-                                <h5 class="card-title">Service 1</h5>
-                                <p class="card-text">Professional service description goes here.</p>
+                        <div class="card service-card">
+                            <div class="card-body text-center p-4">
+                                <i class="fas fa-cogs fa-3x text-primary mb-3"></i>
+                                <h5 class="card-title">Web Development</h5>
+                                <p class="card-text">We build modern, responsive, and high-performing websites tailored to your business needs.</p>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-6">
-                        <div class="card service-card h-100">
-                            <div class="card-body text-center">
+                        <div class="card service-card">
+                            <div class="card-body text-center p-4">
                                 <i class="fas fa-chart-line fa-3x text-primary mb-3"></i>
-                                <h5 class="card-title">Service 2</h5>
-                                <p class="card-text">Another professional service description.</p>
+                                <h5 class="card-title">Digital Marketing</h5>
+                                <p class="card-text">Our marketing strategies help you reach a wider audience and grow your online presence.</p>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-6">
-                        <div class="card service-card h-100">
-                            <div class="card-body text-center">
+                        <div class="card service-card">
+                            <div class="card-body text-center p-4">
                                 <i class="fas fa-users fa-3x text-primary mb-3"></i>
-                                <h5 class="card-title">Service 3</h5>
-                                <p class="card-text">Third professional service description.</p>
+                                <h5 class="card-title">Business Consulting</h5>
+                                <p class="card-text">We provide expert consulting to help you navigate challenges and achieve your goals.</p>
                             </div>
                         </div>
                     </div>
@@ -123,41 +93,21 @@
         </div>
     </section>
 
-    <!-- Contact Section -->
     <section class="section contact-section" id="contact">
         <div class="container">
-            <div class="row">
-                <div class="col-lg-8 mx-auto text-center">
-                    <h2 class="mb-4">{{ website_data.get('contact_section', {}).get('title', 'Get In Touch') }}</h2>
-                    <p class="lead mb-5">{{ website_data.get('contact_section', {}).get('content', 'Ready to get started? Contact us today to learn more about our services.') }}</p>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <i class="fas fa-map-marker-alt fa-2x text-primary mb-3"></i>
-                            <h5>Address</h5>
-                            <p>123 Business Street<br>City, State 12345</p>
-                        </div>
-                        <div class="col-md-4">
-                            <i class="fas fa-phone fa-2x text-primary mb-3"></i>
-                            <h5>Phone</h5>
-                            <p>(555) 123-4567</p>
-                        </div>
-                        <div class="col-md-4">
-                            <i class="fas fa-envelope fa-2x text-primary mb-3"></i>
-                            <h5>Email</h5>
-                            <p>info@business.com</p>
-                        </div>
-                    </div>
-                </div>
+            <div class="text-center">
+                <h2 class="mb-4">{{ website_data.data.get('contact_section', {}).get('title', 'Get In Touch') }}</h2>
+                <p class="lead mb-5">{{ website_data.data.get('contact_section', {}).get('content', 'Ready to get started on your next project? Contact us today to learn more about our services and how we can help you succeed.') }}</p>
             </div>
         </div>
     </section>
 
     <footer class="bg-dark text-white text-center py-4">
         <div class="container">
-            <p>&copy; 2024 {{ website_data.get('title', 'Business Website') }}. All rights reserved.</p>
+            <p>&copy; 2025 {{ website_data.data.get('metadata', {}).get('business_type', 'Your Company') }}. All rights reserved.</p>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html> 
+</html>
