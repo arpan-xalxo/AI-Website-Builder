@@ -9,30 +9,30 @@
 
   <style>
     body {
-      /* Matching the login page background */
+      
       background: linear-gradient(135deg, #0f172a 70%, #facc15 30%);
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
       color: #f1f5f9;
-      font-family: 'Inter', sans-serif; /* A clean, modern font */
+      font-family: 'Inter', sans-serif; 
     }
     .auth-box {
-      /* Using the same styled box */
-      background-color: rgba(30, 41, 59, 0.75); /* Slightly transparent for a modern effect */
-      backdrop-filter: blur(10px); /* Glassmorphism effect */
+      
+      background-color: rgba(30, 41, 59, 0.75); 
+      backdrop-filter: blur(10px); 
       padding: 2.5rem;
       border-radius: 16px;
       box-shadow: 0 8px 32px rgba(0,0,0,0.3);
       width: 100%;
-      max-width: 480px; /* Wider box */
+      max-width: 480px; 
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
     .auth-title {
       font-size: 2rem;
       font-weight: 600;
-      color: #facc15; /* Using the theme's accent color */
+      color: #facc15; 
       margin-bottom: 1.5rem;
     }
     .form-label {
@@ -43,7 +43,7 @@
       background-color: #334155;
       border: 1px solid #475569;
       color: white;
-      height: 50px; /* Taller input fields */
+      height: 50px; 
       padding: 0.75rem 1rem;
       border-radius: 8px;
       transition: border-color 0.3s ease, box-shadow 0.3s ease;
@@ -54,7 +54,7 @@
     .form-control:focus {
       background-color: #334155;
       border-color: #facc15;
-      box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.25); /* Glow effect on focus */
+      box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.25); 
       color: white;
     }
     .btn-signup {
@@ -67,7 +67,7 @@
       transition: background-color 0.3s ease, transform 0.2s ease;
     }
     .btn-signup:hover {
-      background-color: #eab308; /* Slightly darker yellow on hover */
+      background-color: #eab308; 
       transform: translateY(-2px);
     }
     .btn-signup:disabled {
@@ -91,8 +91,10 @@
   </style>
 </head>
 <body>
+
   <div class="auth-box">
     <h3 class="text-center auth-title">Create Your Account</h3>
+
     <form id="signupForm">
       <div class="mb-3">
         <label for="email" class="form-label">Email Address</label>
@@ -112,7 +114,7 @@
       </div>
       <button type="submit" class="btn btn-signup w-100 mt-3">Create Account</button>
     </form>
-    <p class="text-center mt-4 login-link">Already have an account? <a href="/login">Login</a></p>
+    <p class="text-center mt-4 login-link">Already have an account? <a href="/login"> Login </a></p>
     <div id="signupMsg" class="text-center mt-2"></div>
   </div>
 
@@ -141,7 +143,6 @@
             const data = await res.json();
             
             if (res.ok && data.token) {
-                // Don't save the token here, just redirect to login
                 signupMsg.innerHTML = '<div class="alert alert-success">Account created! Please log in.</div>';
                 setTimeout(() => {
                     window.location.href = "/login";

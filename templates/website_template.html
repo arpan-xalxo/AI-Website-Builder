@@ -15,38 +15,68 @@
         .contact-section { background-color: #f8f9fa; }
         .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 25px; padding: 12px 30px; }
         .btn-primary:hover { background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%); }
+        
+        /* Updated Styles for Edit Mode */
+        .edit-toolbar { 
+            position: fixed; 
+            top: 20px; 
+            right: 20px; 
+            background: rgba(30, 41, 59, 0.75);
+            backdrop-filter: blur(10px);
+            color: white; 
+            padding: 10px 15px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
+            z-index: 1000; 
+            display: none; 
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .edit-toolbar .btn {
+            font-weight: 500;
+            border-radius: 8px;
+        }
+        [contenteditable="true"] { 
+            outline: 2px dashed #facc15; 
+            background-color: rgba(250, 204, 21, 0.1); 
+            cursor: text; 
+        }
     </style>
 </head>
 <body>
+    <!-- Hero Section -->
     <section class="hero-section">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 mx-auto">
-                    <h1 class="display-4 fw-bold mb-4">{{ website_data.data.get('hero_section', {}).get('heading', 'Welcome to Our Professional Business') }}</h1>
-                    <p class="lead mb-4">{{ website_data.data.get('hero_section', {}).get('subheading', 'We provide high-quality solutions and amazing services to help your business succeed and grow in a competitive market.') }}</p>
+                    <h1 class="display-4 fw-bold mb-4" data-key="hero_section.heading">{{ website_data.data.get('hero_section', {}).get('heading', 'Welcome to Our Professional Business') }}</h1>
+                    <p class="lead mb-4" data-key="hero_section.subheading">{{ website_data.data.get('hero_section', {}).get('subheading', 'We provide high-quality solutions and amazing services to help your business succeed and grow in a competitive market.') }}</p>
                     <a href="#contact" class="btn btn-primary btn-lg">Get Started</a>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- About Section -->
     <section class="section" id="about">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 mx-auto text-center">
-                    <h2 class="mb-4">{{ website_data.data.get('about_section', {}).get('title', 'About Our Company') }}</h2>
-                    <p class="lead">{{ website_data.data.get('about_section', {}).get('content', 'We are a team of dedicated professionals committed to delivering exceptional services and innovative solutions. Our mission is to build lasting relationships with our clients by exceeding their expectations and gaining their trust through outstanding performance.') }}</p>
+                    <h2 class="mb-4" data-key="about_section.title">{{ website_data.data.get('about_section', {}).get('title', 'About Our Company') }}</h2>
+                    <p class="lead" data-key="about_section.content">{{ website_data.data.get('about_section', {}).get('content', 'We are a team of dedicated professionals committed to delivering exceptional services and innovative solutions. Our mission is to build lasting relationships with our clients by exceeding their expectations and gaining their trust through outstanding performance.') }}</p>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- Services Section -->
     <section class="section" id="services" style="background-color: #f8f9fa;">
         <div class="container">
             <div class="text-center mb-5">
                 <h2>Our Services</h2>
                 <p class="lead">Discover what we can do for your business.</p>
             </div>
+            <!-- Note: Editing dynamic service cards is more complex and not included in this basic implementation -->
             <div class="row">
                 {% if website_data.data.get('services_section') %}
                     {% for service in website_data.data.get('services_section', []) %}
@@ -61,43 +91,21 @@
                     </div>
                     {% endfor %}
                 {% else %}
-                    <div class="col-lg-4 col-md-6">
-                        <div class="card service-card">
-                            <div class="card-body text-center p-4">
-                                <i class="fas fa-cogs fa-3x text-primary mb-3"></i>
-                                <h5 class="card-title">Web Development</h5>
-                                <p class="card-text">We build modern, responsive, and high-performing websites tailored to your business needs.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6">
-                        <div class="card service-card">
-                            <div class="card-body text-center p-4">
-                                <i class="fas fa-chart-line fa-3x text-primary mb-3"></i>
-                                <h5 class="card-title">Digital Marketing</h5>
-                                <p class="card-text">Our marketing strategies help you reach a wider audience and grow your online presence.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6">
-                        <div class="card service-card">
-                            <div class="card-body text-center p-4">
-                                <i class="fas fa-users fa-3x text-primary mb-3"></i>
-                                <h5 class="card-title">Business Consulting</h5>
-                                <p class="card-text">We provide expert consulting to help you navigate challenges and achieve your goals.</p>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Default Service Cards -->
+                    <div class="col-lg-4 col-md-6"><div class="card service-card"><div class="card-body text-center p-4"><i class="fas fa-cogs fa-3x text-primary mb-3"></i><h5 class="card-title">Web Development</h5><p class="card-text">We build modern, responsive, and high-performing websites tailored to your business needs.</p></div></div></div>
+                    <div class="col-lg-4 col-md-6"><div class="card service-card"><div class="card-body text-center p-4"><i class="fas fa-chart-line fa-3x text-primary mb-3"></i><h5 class="card-title">Digital Marketing</h5><p class="card-text">Our marketing strategies help you reach a wider audience and grow your online presence.</p></div></div></div>
+                    <div class="col-lg-4 col-md-6"><div class="card service-card"><div class="card-body text-center p-4"><i class="fas fa-users fa-3x text-primary mb-3"></i><h5 class="card-title">Business Consulting</h5><p class="card-text">We provide expert consulting to help you navigate challenges and achieve your goals.</p></div></div></div>
                 {% endif %}
             </div>
         </div>
     </section>
 
+    <!-- Contact Section -->
     <section class="section contact-section" id="contact">
         <div class="container">
             <div class="text-center">
-                <h2 class="mb-4">{{ website_data.data.get('contact_section', {}).get('title', 'Get In Touch') }}</h2>
-                <p class="lead mb-5">{{ website_data.data.get('contact_section', {}).get('content', 'Ready to get started on your next project? Contact us today to learn more about our services and how we can help you succeed.') }}</p>
+                <h2 class="mb-4" data-key="contact_section.title">{{ website_data.data.get('contact_section', {}).get('title', 'Get In Touch') }}</h2>
+                <p class="lead mb-5" data-key="contact_section.content">{{ website_data.data.get('contact_section', {}).get('content', 'Ready to get started on your next project? Contact us today to learn more about our services and how we can help you succeed.') }}</p>
             </div>
         </div>
     </section>
@@ -108,6 +116,74 @@
         </div>
     </footer>
 
+    <!-- Edit Mode Toolbar -->
+    <div id="editToolbar" class="edit-toolbar">
+        <button id="toggleEditModeBtn" class="btn btn-warning btn-sm">✏️ Enter Edit Mode</button>
+        <button id="saveChangesBtn" class="btn btn-success btn-sm" style="display: none;">✅ Save Changes</button>
+        <span id="saveStatus" class="ms-3"></span>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const websiteId = "{{ website_data._id }}";
+        const token = new URLSearchParams(window.location.search).get('token');
+        let isEditMode = false;
+        
+        const editToolbar = document.getElementById('editToolbar');
+        const toggleEditModeBtn = document.getElementById('toggleEditModeBtn');
+        const saveChangesBtn = document.getElementById('saveChangesBtn');
+        const saveStatus = document.getElementById('saveStatus');
+        const editableElements = document.querySelectorAll('[data-key]');
+
+        async function checkPermissions() {
+            if (!token) return false;
+            try {
+                const res = await fetch('/api/dashboard', { headers: { 'Authorization': `Bearer ${token}` } });
+                if (!res.ok) return false;
+                const { user } = await res.json();
+                const ownerId = "{{ website_data.owner_id }}";
+                return user.role === 'Admin' || user.id === ownerId;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        toggleEditModeBtn.addEventListener('click', () => {
+            isEditMode = !isEditMode;
+            saveChangesBtn.style.display = isEditMode ? 'inline-block' : 'none';
+            toggleEditModeBtn.textContent = isEditMode ? '❌ Exit Edit Mode' : '✏️ Enter Edit Mode';
+            editableElements.forEach(el => el.setAttribute('contenteditable', isEditMode));
+            if (!isEditMode) window.location.reload(); // Discard changes on exit
+        });
+
+        saveChangesBtn.addEventListener('click', async () => {
+            const updates = {};
+            editableElements.forEach(el => {
+                updates[el.getAttribute('data-key')] = el.innerText;
+            });
+
+            saveStatus.textContent = 'Saving...';
+            try {
+                const res = await fetch(`/websites/${websiteId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(updates)
+                });
+                const result = await res.json();
+                if (!res.ok) throw new Error(result.msg || 'Failed to save.');
+                
+                saveStatus.textContent = 'Saved!';
+                setTimeout(() => saveStatus.textContent = '', 2000);
+            } catch (e) {
+                saveStatus.textContent = `Error: ${e.message}`;
+            }
+        });
+
+        window.addEventListener('load', async () => {
+            if (await checkPermissions()) {
+                editToolbar.style.display = 'flex';
+            }
+        });
+    </script>
 </body>
 </html>

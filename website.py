@@ -69,33 +69,43 @@ def get_website(email,user_id, role_id, website_id):
     
     return jsonify(website)
 
-# Update website
+# REPLACE the old update_website function with this new, more robust version
 @website_bp.route('/websites/<website_id>', methods=['PUT'])
 @token_required
-def update_website(email,user_id, role_id, website_id):
+def update_website(email, user_id, role_id, website_id):
     from app import mongo
-    website = Website.find_by_id(mongo, website_id)
     
+    website = Website.find_by_id(mongo, website_id)
     if not website:
         return jsonify({'msg': 'Website not found'}), 404
     
-    if not can_edit_website(user_id, role_id, website['owner_id']):
+    if not can_edit_website(user_id, role_id, website.get('owner_id')):
         return jsonify({'msg': 'Insufficient permissions'}), 403
     
-    data = request.get_json()
-    website_data = data.get('data', {})
-    
+    update_data = request.get_json()
+    if not update_data:
+        return jsonify({'msg': 'No update data provided'}), 400
+
+    # This creates a flexible update command for MongoDB using dot notation
+    # e.g., {'data.hero_section.heading': 'New Title'}
+    update_operation = {
+        f'data.{key}': value for key, value in update_data.items()
+    }
+
+    if not update_operation:
+        return jsonify({'msg': 'No valid fields to update'}), 400
+
     result = mongo.db.websites.update_one(
         {'_id': ObjectId(website_id)},
-        {'$set': {'data': website_data}}
+        {'$set': update_operation}
     )
     
-    if result.modified_count == 0:
-        return jsonify({'msg': 'No changes made'}), 400
+    # It's okay if nothing changed, so we return a success response
+    if result.matched_count == 0:
+        return jsonify({'msg': 'Website not found'}), 404
     
-    return jsonify({'msg': 'Website updated'})
+    return jsonify({'msg': 'Website updated successfully'})
 
-# Delete website
 @website_bp.route('/websites/<website_id>', methods=['DELETE'])
 @token_required
 def delete_website(email,user_id, role_id, website_id):
@@ -114,3 +124,5 @@ def delete_website(email,user_id, role_id, website_id):
         return jsonify({'msg': 'Website not found'}), 404
     
     return jsonify({'msg': 'Website deleted'}) 
+
+

@@ -83,17 +83,15 @@
 
         let tableHtml = `<table class="table"><thead><tr><th>Name</th><th>Owner</th><th class="text-end">Actions</th></tr></thead><tbody>`;
         for (const w of websites) {
-          // Determine if the current user can edit this specific website
-          const canEdit = currentUser.role === 'Admin' || currentUser.id === w.owner_id;
+          const canEditOrDelete = currentUser.role === 'Admin' || currentUser.id === w.owner_id;
 
           tableHtml += `
             <tr>
               <td>${w.data?.metadata?.business_type || 'Untitled'}</td>
               <td>${w.owner_email || w.owner_id || '-'}</td>
               <td class="text-end">
-                <a href="/preview/${w._id}?token=${token}" target="_blank" class="action-btn">👁️ Preview</a>
-                ${canEdit ? `
-                  <a href="/websites/${w._id}/edit-ai?token=${token}" class="action-btn">✏️ Edit</a>
+                <a href="/preview/${w._id}?token=${token}" target="_blank" class="action-btn">👁️ Preview & Edit</a>
+                ${canEditOrDelete ? `
                   <button class="action-btn btn-delete" onclick='deleteWebsite("${w._id}")'>🗑️ Delete</button>
                 ` : ''}
               </td>

@@ -147,3 +147,42 @@ def regenerate_website(email, user_id, role_id, website_id):
 
     except Exception as e:
         return jsonify({'msg': f'Error re-generating website: {str(e)}'}), 500
+    
+
+
+@ai_bp.route('/update-website/<website_id>', methods=['PUT'])
+@token_required
+def update_website(email, user_id, role_id, website_id):
+    from app import mongo
+    try:
+        if not can_edit_website(user_id,role_id):
+            return jsonify({'msg': 'Insufficient permmision'}),403
+    
+        if not request.is_json:
+            return jsonify({'msg': 'application/json'}),403
+         
+        data= request.get_json()
+        if not data:
+            return jsonify({'msg': 'update data'}),403
+    
+        allowed_fields = ['business_type', 'industry', 'description', 'content', 'metadata']
+        update_fields = {key: data[key] for key in allowed_fields if key in data}
+
+        print(update_fields)
+
+        if not update_fields:
+            return jsonify({'msg':'no valid fields'})
+    
+        result = mongo.db.websites.update_one(
+            {"_id":ObjectId(website_id)},
+            {"$set":update_fields}
+        )
+
+        return jsonify({
+        'msg':'website updated succesfully',
+        'updated_fields':list(update_fields.keys())
+    }),200
+     
+    except Exception as e:
+       print("error:{e}",file=sys.stderr)
+       return jsonify({'msg':'error: {str(e)}'}) , 500

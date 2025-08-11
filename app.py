@@ -36,12 +36,15 @@ from ai_generator import ai_bp
 from preview import preview_bp
 from docs import docs_bp
 
+
+
 app.register_blueprint(auth_bp)
 app.register_blueprint(admin_bp)
 app.register_blueprint(website_bp)
 app.register_blueprint(ai_bp, url_prefix='/ai')
 app.register_blueprint(preview_bp)
 app.register_blueprint(docs_bp)
+
 
 # Health check endpoint
 @app.route('/health')

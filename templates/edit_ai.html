@@ -144,7 +144,7 @@
       };
 
       try {
-        const res = await fetch(`/ai/regenerate-website/${websiteId}`, {
+        const res = await fetch(`/ai/update-website/${websiteId}`, {
           method: 'PUT',
           headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
           body: JSON.stringify(updatedData)
@@ -152,12 +152,15 @@
         const result = await res.json();
         if (!res.ok) throw new Error(result.msg || 'Failed to re-generate');
         
-        msgDiv.innerHTML = '<div class="alert alert-success">Website re-generated successfully! You can now close this page.</div>';
+        msgDiv.innerHTML = '<div class="alert alert-success">Website updated successfully! You can now close this page.</div>';
         
+        setTimeout(()=>{
+          window.location.href ='/my-websites'
+        },1500)
       } catch (e) {
         msgDiv.innerHTML = `<div class="alert alert-danger">Error: ${e.message}</div>`;
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '🔄 Re-generate Website';
+        submitBtn.innerHTML = 'UPdating Website';
       }
     });
 
